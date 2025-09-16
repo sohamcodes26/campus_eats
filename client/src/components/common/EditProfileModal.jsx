@@ -8,10 +8,11 @@ const EditProfileModal = ({ isOpen, onClose, onSave, user }) => {
         if (user) {
             setFormData({
                 name: user.name || '',
-                // Add other fields as they become available on the user object
                 phone: user.phone || '+91 98765 43210', // Placeholder
                 canteenName: user.canteenDetails?.canteenName || '',
                 canteenAddress: user.canteenDetails?.canteenAddress || '',
+                // <-- ADDED 1: Load cuisines as a comma-separated string
+                cuisineTypes: user.canteenDetails?.cuisineTypes?.join(', ') || ''
             });
         }
     }, [user, isOpen]);
@@ -24,7 +25,17 @@ const EditProfileModal = ({ isOpen, onClose, onSave, user }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await onSave(formData);
+
+        // <-- ADDED 2: Convert the cuisine string back to an array before saving
+        const dataToSave = {
+          ...formData,
+          cuisineTypes: formData.cuisineTypes
+            .split(',')             // Split the string into an array
+            .map(s => s.trim())     // Remove whitespace
+            .filter(s => s)          // Remove any empty strings (like from ",,")
+        };
+
+        await onSave(dataToSave); // Pass the new, corrected data
         setLoading(false);
     };
 
@@ -33,7 +44,7 @@ const EditProfileModal = ({ isOpen, onClose, onSave, user }) => {
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg m-4">
                 <h2 className="text-2xl font-bold text-brand-dark-blue mb-6">Edit Profile</h2>
                 <form onSubmit={handleSubmit}>
@@ -59,6 +70,22 @@ const EditProfileModal = ({ isOpen, onClose, onSave, user }) => {
                                 <div>
                                     <label htmlFor="canteenAddress" className="block text-sm font-medium text-gray-700">Canteen Address</label>
                                     <input type="text" name="canteenAddress" id="canteenAddress" value={formData.canteenAddress} onChange={handleChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+                                </div>
+
+                                {/* <-- ADDED 3: The new input field for Cuisines --> */}
+                                <div>
+                                  <label htmlFor="cuisineTypes" className="block text-sm font-medium text-gray-700">
+                                    Cuisines (comma-separated)
+                                  </label>
+                                  <input 
+                                    type="text" 
+                                    name="cuisineTypes" 
+                                    id="cuisineTypes" 
+                                    value={formData.cuisineTypes} 
+                                    onChange={handleChange} 
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                                    placeholder="e.g. Indian, Chinese, Snacks"
+                                  />
                                 </div>
                             </>
                         )}

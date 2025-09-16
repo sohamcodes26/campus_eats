@@ -28,6 +28,7 @@ const BrowseCanteens = () => {
             try {
                 setLoading(true);
                 const { data } = await api.get('/canteens');
+                console.log("CANTEEN DATA:", data);
                 setCanteens(data);
             } catch (error) {
                 toast.error('Could not fetch canteens. Please try again.');
@@ -69,13 +70,17 @@ const BrowseCanteens = () => {
 
     return (
         <>
-            <div>
+            {/* 1. ADDED CONTAINER and PADDING to center all page content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-brand-dark-blue">Browse Canteens</h1>
+                    {/* 2. ADDED 'text-center' to the <h1> */}
+                    <h1 className="text-3xl font-bold text-brand-dark-blue text-center">Browse Canteens</h1>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm">
-                    <div className="relative w-full sm:w-auto sm:flex-grow mr-0 sm:mr-4">
+                {/* 3. CHANGED 'justify-between' to 'justify-center' and added 'gap-4' */}
+                <div className="flex flex-col sm:flex-row justify-center items-center mb-6 gap-4">
+                    {/* 4. REMOVED 'sm:flex-grow' and 'mr-0 sm:mr-4' */}
+                    <div className="relative w-full sm:w-[40rem]">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <SearchIcon />
                         </div>
@@ -84,12 +89,12 @@ const BrowseCanteens = () => {
                             placeholder="Search canteens..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-brand-green focus:border-brand-green"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-brand-green focus:border-brand-green"
                         />
                     </div>
                     <button 
                         onClick={() => setIsFilterOpen(true)}
-                        className="w-full sm:w-auto mt-4 sm:mt-0 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                        className="w-full sm:w-auto mt-4 sm:mt-0 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                     >
                         <FilterIcon />
                         Filters
@@ -97,11 +102,13 @@ const BrowseCanteens = () => {
                 </div>
                 
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    // Also centered the skeleton grid
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
                         {[...Array(3)].map((_, i) => <SkeletonCard key={i} />)}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    // Also centered the main card grid
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-center">
                         {filteredCanteens.length > 0 ? (
                             filteredCanteens.map(canteen => (
                                 <CanteenCard key={canteen._id} canteen={canteen} />
