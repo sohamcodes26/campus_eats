@@ -92,16 +92,25 @@ const MyOrders = () => {
                 <TabButton name="Completed Orders" />
             </div>
 
-            <div className="space-y-6">
+            {/* 1. REMOVED 'space-y-6' from this wrapper div */}
+            <div>
                 {loading ? (
-                    <>
+                    
+                    /* 2. WRAPPED Skeletons in a grid */
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <SkeletonOrderCard />
                         <SkeletonOrderCard />
-                    </>
+                    </div>
+
                 ) : filteredOrders.length > 0 ? (
-                    filteredOrders.map(order => (
-                        <OrderCard key={order._id} order={order} />
-                    ))
+                    
+                    /* 3. WRAPPED the mapped cards in a grid */
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredOrders.map(order => (
+                            <OrderCard key={order._id} order={order} />
+                        ))}
+                    </div>
+
                 ) : (
                     <div className="text-center py-16 bg-white rounded-lg shadow-sm">
                         <h3 className="text-xl font-semibold text-gray-700">No Orders Found</h3>

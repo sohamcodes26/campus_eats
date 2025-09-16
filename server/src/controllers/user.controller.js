@@ -18,6 +18,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
+
 /**
  * @description Update user profile
  * @route PUT /api/v1/users/profile
@@ -38,12 +39,20 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   if (user.role === 'student') {
     user.studentDetails.phone = req.body.phone || user.studentDetails.phone;
   } else if (user.role === 'canteen') {
-    const { canteenName, canteenAddress, phone, isOpen } = req.body;
+    
+    // <-- 1. ADD 'cuisineTypes' to this line
+    const { canteenName, canteenAddress, phone, isOpen, cuisineTypes } = req.body;
+
     user.canteenDetails.canteenName = canteenName || user.canteenDetails.canteenName;
     user.canteenDetails.canteenAddress = canteenAddress || user.canteenDetails.canteenAddress;
     user.canteenDetails.phone = phone || user.canteenDetails.phone;
     if (isOpen !== undefined) {
         user.canteenDetails.isOpen = isOpen;
+    }
+
+    // <-- 2. ADD this 'if' block to save the array
+    if (cuisineTypes) {
+        user.canteenDetails.cuisineTypes = cuisineTypes;
     }
   }
 
