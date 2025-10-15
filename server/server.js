@@ -23,9 +23,26 @@ connectDB();
 const app = express();
 
 // Middleware
+// CORS configuration - allow multiple origins
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ["http://localhost:5173", "http://localhost:5174"];
+
+console.log('🔒 CORS allowed origins:', allowedOrigins);
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || ["http://localhost:5173", "http://localhost:5174"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        console.log('❌ CORS blocked origin:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -47,6 +64,24 @@ app.use("/api/v1/ai", aiRoutes); // Mount the new AI routes
 // Base Route
 app.get("/", (req, res) => {
   res.send("API is running...");
+});
+
+// Debug endpoint to check CORS and cookie configuration
+app.get("/api/debug", (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    nodeEnv: process.env.NODE_ENV,
+    corsOrigins: allowedOrigins,
+    requestOrigin: req.headers.origin || 'no-origin',
+    cookieHeader: req.headers.cookie ? 'present' : 'absent',
+    cookies: Object.keys(req.cookies),
+    allHeaders: {
+      origin: req.headers.origin,
+      host: req.headers.host,
+      'user-agent': req.headers['user-agent'],
+      referer: req.headers.referer,
+    }
+  });
 });
 
 // Error Handling Middleware
