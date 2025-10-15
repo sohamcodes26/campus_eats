@@ -36,12 +36,18 @@ const registerUser = asyncHandler(async (req, res) => {
   if (user) {
     const token = user.getSignedJwtToken();
 
-    res.cookie('accessToken', token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
       sameSite: process.env.NODE_ENV !== 'development' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+    };
+
+    console.log('🍪 Setting cookie with options:', cookieOptions);
+    console.log('🌍 Request origin:', req.headers.origin);
+    console.log('⚙️  NODE_ENV:', process.env.NODE_ENV);
+
+    res.cookie('accessToken', token, cookieOptions);
 
     res.status(201).json({
       _id: user._id,
@@ -73,12 +79,18 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await user.matchPassword(password))) {
     const token = user.getSignedJwtToken();
 
-    res.cookie('accessToken', token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV !== 'development',
       sameSite: process.env.NODE_ENV !== 'development' ? 'none' : 'lax',
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+    };
+
+    console.log('🍪 Setting cookie with options:', cookieOptions);
+    console.log('🌍 Request origin:', req.headers.origin);
+    console.log('⚙️  NODE_ENV:', process.env.NODE_ENV);
+
+    res.cookie('accessToken', token, cookieOptions);
 
     res.status(200).json({
       _id: user._id,

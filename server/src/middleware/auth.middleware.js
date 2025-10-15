@@ -7,7 +7,10 @@ const protect = asyncHandler(async (req, res, next) => {
   console.log('\n=== PROTECT MIDDLEWARE ===');
   console.log('Request URL:', req.originalUrl);
   console.log('Request Method:', req.method);
+  console.log('Origin:', req.headers.origin || 'no-origin-header');
+  console.log('Cookie header:', req.headers.cookie || 'no-cookie-header');
   console.log('Cookies received:', Object.keys(req.cookies));
+  console.log('All cookies:', req.cookies);
   
   let token;
 
